@@ -39,7 +39,7 @@ stages:
           $(tag)
     - task: CopyFiles@2
       inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/Manifests'
+        SourceFolder: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/Manifests'
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         OverWrite: true
