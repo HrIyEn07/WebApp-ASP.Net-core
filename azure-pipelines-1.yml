@@ -38,6 +38,7 @@ stages:
         tags: |
           $(tag)
     - task: PublishBuildArtifacts@1
+      displayName: Publish Build Artifacts
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
