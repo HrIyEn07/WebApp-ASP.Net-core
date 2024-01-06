@@ -8,8 +8,8 @@ COPY . .
 # Set NuGet cache to a non-protected directory
 ENV NUGET_PACKAGES=/root/.nuget/packages
 
-# Explicitly set permissions
-RUN icacls C:\app /T /grant Users:F
+# Use PowerShell to set permissions
+RUN powershell -Command "Get-ChildItem C:\app -Recurse | ForEach-Object { $_.Attributes = 'Normal' }"
 
 # Clean 'obj' directory and restore dependencies
 RUN rd /s /q obj && dotnet restore
