@@ -5,6 +5,12 @@ WORKDIR /app
 # Copy the project file
 COPY . .
 
+# Set NuGet cache to a non-protected directory
+ENV NUGET_PACKAGES=/root/.nuget/packages
+
+# Explicitly set permissions
+RUN icacls C:\app /T /grant Users:F
+
 # Clean 'obj' directory and restore dependencies
 RUN rd /s /q obj && dotnet restore
 
