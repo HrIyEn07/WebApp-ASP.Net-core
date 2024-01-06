@@ -10,7 +10,7 @@ COPY ./NuGet.config ./
 RUN dotnet restore
 
 # Copy the entire application
-COPY ./ ./
+COPY . .
 
 # Build and publish the application
 RUN dotnet publish -c Release -o out
