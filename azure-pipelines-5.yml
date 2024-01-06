@@ -33,10 +33,6 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: DockerInstaller@0
-  inputs:
-    dockerVersion: '17.09.0-ce'
-
 - task: Docker@2
   inputs:
     containerRegistry: 'DevOpsPulse-_ACR_ServiceConnection'
