@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0
 
 WORKDIR /app
 
-COPY ./ .
+COPY . .
 
 RUN dotnet restore
 
