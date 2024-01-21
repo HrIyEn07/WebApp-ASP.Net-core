@@ -41,6 +41,6 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '*/WebApp-ASP.Net%20core/terraform-manifests'
+    SourceFolder: '$(agent.builddirectory)/WebApp-ASP.Net%20core/terraform-manifests'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    TargetFolder: '$(build.artifactstagingdirectory)'
