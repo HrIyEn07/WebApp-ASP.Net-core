@@ -38,3 +38,9 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'Pulse'
     publishLocation: 'Container'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '*/WebApp-ASP.Net%20core/terraform-manifests'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
