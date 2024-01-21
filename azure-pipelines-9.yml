@@ -41,6 +41,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
     backendServiceArm: 'Dev Test (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
     backendAzureRmResourceGroupName: 'devopsrg01'
     backendAzureRmStorageAccountName: 'stoaregaccoundevops01'
@@ -51,11 +52,13 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'validate'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
 
 - task: TerraformTaskV4@4
   inputs:
     provider: 'azurerm'
     command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
     environmentServiceNameAzureRM: 'Dev Test (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
 
 - task: CopyFiles@2
