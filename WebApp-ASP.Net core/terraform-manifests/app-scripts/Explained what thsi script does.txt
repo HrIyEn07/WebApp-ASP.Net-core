@@ -1,0 +1,16 @@
+Let's break down the commands and their purposes:
+
+package_upgrade: false: This directive controls whether the system package manager should perform an upgrade. In this case, it's set to false, so no package upgrades will be performed.
+
+packages:: This specifies a list of packages to be installed. In this case, it installs the Apache HTTP Server (httpd).
+
+write_files:: This section specifies files to be created or modified. It includes creating an HTML file at /var/www/html/index.html with a welcome message and another HTML file at /var/www/html/app1/index.html with a more detailed message.
+
+runcmd:: This section specifies a series of commands to be executed. The commands are as follows:
+
+sudo systemctl start httpd: Starts the Apache HTTP Server.
+sudo systemctl enable httpd: Enables the Apache HTTP Server to start on boot.
+sudo systemctl stop firewalld: Stops the firewalld service.
+sudo mkdir /var/www/html/app1: Creates a directory for the second HTML file.
+[sudo, curl, -H, "Metadata:true", --noproxy, "*", "http://169.254.169.254/metadata/instance?api-version=2020-09-01", -o, /var/www/html/app1/metadata.html]: Downloads instance metadata from a metadata service (commonly found in cloud environments) and saves it to /var/www/html/app1/metadata.html using the curl command.
+This cloud-config file is geared towards setting up a basic web server with Apache and creating some HTML files. It also includes commands to start the server, enable it on boot, stop the firewall service, create a directory, and fetch metadata from a metadata service.
