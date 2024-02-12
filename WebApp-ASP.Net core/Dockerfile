@@ -10,5 +10,4 @@ RUN dotnet publish -c Release -o out
 
 EXPOSE 80
 
-ENTRYPOINT ["dotnet", "./out/WebApp-ASP.Net core.dll"]
-
+ENTRYPOINT ["dotnet", "./out/WebApp-ASP.Net-core.dll"]
