@@ -72,3 +72,4 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'pulse1'
     publishLocation: 'Container'
+    # This is from hriyen branch!
