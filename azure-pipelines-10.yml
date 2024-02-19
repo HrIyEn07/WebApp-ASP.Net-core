@@ -40,7 +40,6 @@ steps:
     TargetFolder: '$(build.artifactstagingdirectory)'
     OverWrite: true
 
--
 - task: DockerInstaller@0
   inputs:
     dockerVersion: '17.09.0-ce'
