@@ -35,7 +35,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)/terraform-manifests'
+    SourceFolder: '$(System.DefaultWorkingDirectory)**/terraform-manifests'
     Contents: '**'
     TargetFolder: '$(build.artifactstagingdirectory)'
     OverWrite: true
