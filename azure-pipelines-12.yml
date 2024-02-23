@@ -56,14 +56,12 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
         commandOptions: '-out=mytfplan'
         environmentServiceNameAzureRM: 'Dev Test(2)(18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
-    - task: ArchiveFiles@2
-      displayName: Archive file
+    - task: CopyFiles@2
+      displayName: Copy files
       inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)'
-        includeRootFolder: true
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        replaceExistingArchive: true
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: '**'
+        TargetFolder: '$(build.artifactstagingdirectory)'
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifacts
       inputs:
