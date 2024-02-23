@@ -16,6 +16,10 @@ stages:
   - job: Build
     displayName: 'Build'
     steps:
+    - task: TerraformInstaller@1
+      displayName: Terraform installer
+      inputs:
+        terraformVersion: 'latest'
     - task: TerraformTaskV4@4
       displayName: Terraform Init
       inputs:
