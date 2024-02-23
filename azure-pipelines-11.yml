@@ -31,11 +31,9 @@ steps:
 - task: VSTest@2
   inputs:
     platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
 - task: TerraformInstaller@1
   inputs:
-    terraformVersion: 'latest'
+    terraformVersion: '1.0.0'
 
 - task: TerraformTaskV4@4
   inputs:
@@ -53,7 +51,6 @@ steps:
     provider: 'azurerm'
     command: 'plan'
     workingDirectory: '$(System.DefaultWorkingDirectory/WebApp-ASP.Net core/terraform-manifests'
-    commandOptions: '-out=mytfplan'
     environmentServiceNameAzureRM: 'Dev Test(2)(18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
   
 - task: CopyFiles@2
