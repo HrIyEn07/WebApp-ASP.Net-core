@@ -40,6 +40,7 @@ stages:
         command: 'custom'
         customCommand: 'fmt'
         outputTo: 'console'
+        environmentServiceNameAzureRM: 'Dev Test(2)(18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
     
     - task: TerraformTaskV4@4
       inputs:
