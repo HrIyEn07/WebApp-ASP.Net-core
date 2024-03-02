@@ -1,5 +1,5 @@
 # Admin credential
 locals {
   username        = "Hriyen"
-  password        = "Admin@1234"
+  password        = "Admin@12345"
 }
