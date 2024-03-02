@@ -1,50 +1,70 @@
-# Docker
-# Build and push an image to Azure Container Registry
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
 
 trigger:
 - main
 
-resources:
-- repo: self
-
-variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'd8d0a24e-0c36-4f22-a52f-ff9919b8e7dd'
-  imageRepository: 'webappimage'
-  containerRegistry: 'acrdemo7777777777777777777.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/WebApp-ASP.Net core/Dockerfile'
-  tag: '$(Build.BuildId)'
-
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+pool:
+  vmImage: ubuntu-latest
 
 stages:
 - stage: Build
-  displayName: Build and push stage
+  displayName: 'Build'
   jobs:
   - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
+    displayName: 'Build'
     steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
+    - task: TerraformInstaller@1
+      displayName: Terraform installer
       inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+        terraformVersion: 'latest'
+    - task: TerraformTaskV4@4
+      displayName: Terraform Init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+        backendServiceArm: 'AzureServiceConnection01'
+        backendAzureRmResourceGroupName: 'terraform_rg01'
+        backendAzureRmStorageAccountName: 'terraformstate2015'
+        backendAzureRmContainerName: 'tfcontainer01'
+        backendAzureRmKey: 'terraform.tfstate'
+
+    - task: TerraformTaskV4@4
+      displayName: Terraform Validate
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+    
+    - task: TerraformTaskV4@4
+      displayName: Terraform format
+      inputs:
+        provider: 'azurerm'
+        command: 'custom'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+        customCommand: 'fmt'
+        outputTo: 'console'
+        environmentServiceNameAzureRM: 'Dev Test(2)(18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
+    
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+        commandOptions: '-out=mytfplan'
+        environmentServiceNameAzureRM: 'Dev Test(2)(18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
     - task: CopyFiles@2
+      displayName: Copy files
       inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/Manifests'
+        SourceFolder: '$(Build.SourcesDirectory)'
         Contents: '**'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-        OverWrite: true
+        TargetFolder: '$(build.artifactstagingdirectory)'
     - task: PublishBuildArtifacts@1
+      displayName: Publish Artifacts
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'Drop'
+        ArtifactName: 'Artifact-$(Build.BuildId)'
         publishLocation: 'Container'
