@@ -62,9 +62,10 @@ stages:
         SourceFolder: '$(Build.SourcesDirectory)'
         Contents: '**'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        OverWrite: true
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifacts
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'Artifact-$(Build.BuildId)'
+        ArtifactName: 'Artifacts-terraform'
         publishLocation: 'Container'
