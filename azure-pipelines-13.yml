@@ -52,7 +52,7 @@ stages:
             inputs:
               SourceFolder: '$(Build.SourceDirectory)'
               Contents: '**'
-              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+              TargetFolder: '$(build.artifactstagingdirectory)'
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
