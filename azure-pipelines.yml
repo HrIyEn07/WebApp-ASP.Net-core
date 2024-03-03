@@ -54,7 +54,6 @@ stages:
         provider: 'azurerm'
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
-        commandOptions: '-out=mytfplan'
         environmentServiceNameAzureRM: 'Dev Test(2)(18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
     - task: CopyFiles@2
       displayName: Copy files
@@ -62,9 +61,10 @@ stages:
         SourceFolder: '$(Build.SourcesDirectory)'
         Contents: '**'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        OverWrite: true
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifacts
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'Artifact-$(Build.BuildId)'
+        ArtifactName: 'Artifacts-terraform'
         publishLocation: 'Container'
