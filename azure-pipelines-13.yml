@@ -50,7 +50,7 @@ stages:
               environmentServiceNameAzureRM: 'Dev Test(2)(18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
           - task: CopyFiles@2
             inputs:
-              SourceFolder: '$(Build.SourceDirectory)'
+              SourceFolder: '$(Build.SourcesDirectory)'
               Contents: '**'
               TargetFolder: '$(build.artifactstagingdirectory)'
           - task: PublishBuildArtifacts@1
