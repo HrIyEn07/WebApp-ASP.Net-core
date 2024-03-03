@@ -15,7 +15,6 @@ resource "azurerm_subnet" "Subnet" {
   service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"]
 }
 
-
 # Create the network interfaces for each VM
 resource "azurerm_network_interface" "nic_01" {
   
