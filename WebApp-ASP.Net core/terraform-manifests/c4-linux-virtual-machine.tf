@@ -26,3 +26,4 @@ resource "azurerm_linux_virtual_machine" "mylinuxvm" {
 }
 
 ## This is for testing!
+# This is from Github
