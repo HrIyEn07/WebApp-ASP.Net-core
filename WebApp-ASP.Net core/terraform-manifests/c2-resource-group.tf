@@ -5,9 +5,3 @@ resource "azurerm_resource_group" "myrg" {
 }
 # This is from dev-branch 2
 ##This is from dev-branch local system
-
-
-
-
-
-
