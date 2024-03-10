@@ -8,7 +8,7 @@ resource "azurerm_virtual_network" "myvnet" {
 
 # Create Subnet
 resource "azurerm_subnet" "mysubnet" {
-  name                 = "mysubnet-1"
+  name                 = "mysubnet-20"
   resource_group_name  = azurerm_resource_group.myrg.name
   virtual_network_name = azurerm_virtual_network.myvnet.name
   address_prefixes     = ["10.0.2.0/24"]
@@ -39,3 +39,6 @@ resource "azurerm_network_interface" "myvmnic" {
     public_ip_address_id = azurerm_public_ip.mypublicip.id 
   }
 }
+
+
+# This is from Feature-branch! 
