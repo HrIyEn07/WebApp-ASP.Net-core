@@ -8,7 +8,6 @@ resource "azurerm_resource_group" "myrg" {
 
 
 
-# This is from GitHub!
-# This is from Local system - Naresh-branch
+
 
 
