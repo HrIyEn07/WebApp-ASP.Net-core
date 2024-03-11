@@ -41,4 +41,5 @@ resource "azurerm_network_interface" "myvmnic" {
 }
 
 
-# This is from Feature-branch! 
+# Modified from local naresh-branch
+# This is also the same
