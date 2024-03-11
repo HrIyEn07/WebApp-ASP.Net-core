@@ -39,12 +39,3 @@ resource "azurerm_network_interface" "myvmnic" {
     public_ip_address_id = azurerm_public_ip.mypublicip.id 
   }
 }
-
-
-
-
-
-
-
-# Modified from local naresh-branch
-# This is also the same
