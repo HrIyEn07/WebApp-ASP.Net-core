@@ -41,4 +41,5 @@ resource "azurerm_network_interface" "myvmnic" {
 }
 
 
-# This is from Feature-branch! 
+# This is from remote branch
+# This is also from remote
