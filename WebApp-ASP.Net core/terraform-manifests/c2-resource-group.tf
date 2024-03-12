@@ -4,5 +4,6 @@ resource "azurerm_resource_group" "myrg" {
   location = "East US"
 }
 
+# file added
 
 # This is from Dev branch! Work is in progress!
