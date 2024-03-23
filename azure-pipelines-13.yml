@@ -90,7 +90,7 @@ steps:
     pollingTimeoutSec: '300'
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(.build.SourcesDirectory)'
+    SourceFolder: '$(Build.SourcesDirectory)'
     Contents: '**'
     TargetFolder: '$(build.artifactstagingdirectory)'
 
