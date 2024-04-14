@@ -21,8 +21,8 @@ steps:
   inputs:
     command: 'restore'
     restoreSolution: '$(solution)'
+    projects: '**/*.csproj'
     feedsToUse: 'select'
-    disableParallelProcessing: true
 
 - task: VSBuild@1
   inputs:
