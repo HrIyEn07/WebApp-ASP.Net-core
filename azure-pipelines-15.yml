@@ -35,3 +35,9 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'key-vault-sc01'
+    KeyVaultName: 'pipeline-key01'
+    SecretsFilter: '*'
+    RunAsPreJob: false
