@@ -36,9 +36,11 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+
+
 - task: AzureFileCopy@6
   inputs:
-    SourcePath: '$(Build.ArtifactStagingDirectory)/WebApp-ASP.Net core/*'
+    SourcePath: '$(Build.SourcesDirectory)/WebApp-ASP.Net core/*'
     azureSubscription: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
     Destination: 'AzureBlob'
     storage: 'storagedevopspulse01'
