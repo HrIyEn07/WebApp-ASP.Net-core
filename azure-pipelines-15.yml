@@ -35,9 +35,12 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-- task: AzureKeyVault@2
+
+- task: AzureFileCopy@6
   inputs:
-    azureSubscription: 'key-vault-sc01'
-    KeyVaultName: 'pipeline-key01'
-    SecretsFilter: '*'
-    RunAsPreJob: false
+    SourcePath: '$(Build.ArtifactStagingDirectory)/WebApp-ASP.Net core/*'
+    azureSubscription: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
+    Destination: 'AzureBlob'
+    storage: 'storagedevopspulse01'
+    ContainerName: 'container01'
+    BlobPrefix: 'artifacts/'
