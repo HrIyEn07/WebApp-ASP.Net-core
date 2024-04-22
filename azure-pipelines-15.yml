@@ -43,6 +43,6 @@ steps:
     SourcePath: '$(Build.SourcesDirectory)/WebApp-ASP.Net core/*'
     azureSubscription: 'Dev Test (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
     Destination: 'AzureBlob'
-    storage: 'storagedevopspulse01'
-    ContainerName: 'container01'
+    storage: 'https://storagedevopspulse01.blob.core.windows.net'
+    ContainerName: 'https://storagedevopspulse01.blob.core.windows.net/container01'
     BlobPrefix: 'artifacts/'
