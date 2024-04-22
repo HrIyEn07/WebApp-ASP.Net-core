@@ -41,7 +41,7 @@ steps:
 - task: AzureFileCopy@6
   inputs:
     SourcePath: '$(Build.SourcesDirectory)/WebApp-ASP.Net core/*'
-    azureSubscription: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
+    azureSubscription: 'Dev Test (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
     Destination: 'AzureBlob'
     storage: 'storagedevopspulse01'
     ContainerName: 'container01'
