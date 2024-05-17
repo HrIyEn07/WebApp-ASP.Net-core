@@ -38,7 +38,6 @@ stages:
   
   - stage: 
     displayName: Test stage
-    dependsOn: Build
     jobs:
       - job: Test
         displayName: Test job
