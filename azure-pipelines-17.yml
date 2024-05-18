@@ -33,9 +33,15 @@ stages:
           - task: VSBuild@1
             inputs:
               solution: '**\*.sln'
+              msbuildArgs: '/p:Configuration=$(buildConfiguration)'
               platform: 'any cpu'
               configuration: 'release'
-          
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'acrdevops077-sc'
+              repository: 'acrdevops077.azurecr.io'
+              command: 'buildAndPush'
+              Dockerfile: '**/Dockerfile'
   
   - stage: 
     displayName: Test stage
