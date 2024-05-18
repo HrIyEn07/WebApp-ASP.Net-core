@@ -1,29 +1,26 @@
-# Stage 1: Restore dependencies (uses image with .NET SDK)
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-stage
+# Use the official .NET SDK image for building
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /app
 
-# Set working directory with appropriate permissions (using a Linux shell)
-RUN ["bash", "-c", "chmod -R 775 /app"]
-
-# Copy the project ( . ) to avoid unnecessary files
-COPY . .
-
-# Set user to a dedicated build user with access (e.g., builduser)
-USER builduser
-
-# Restore dependencies using dotnet restore
+# Copy the project file and restore dependencies
+COPY WebApp-ASP.Net core.csproj .
 RUN dotnet restore
 
-# Stage 2: Build and copy the application (smaller image)
-FROM microsoft/dotnet:6.0-aspnet AS final-stage
+# Copy the remaining source code
+COPY . .
 
-# Copy only the project files from the build stage
-COPY --from=build-stage /app .
+# Build the application
+RUN dotnet publish -c Release -o out
 
-# Set user to non-root user for security (e.g., nobody)
-USER nobody
+# Use a lighter runtime image for the final image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
+WORKDIR /app
 
-# Expose port 80 for the application
+# Copy the built application from the build image
+COPY --from=build /app/out .
+
+# Expose the port the app will run on
 EXPOSE 80
 
-# Run the application using default web server (kestrel)
-ENTRYPOINT ["dotnet", "WebApp-ASP.Net-core.dll"]  # Replace with your actual application name
+# Command to run the application
+ENTRYPOINT ["dotnet", "WebApp-ASP.Net-core.dll"]
