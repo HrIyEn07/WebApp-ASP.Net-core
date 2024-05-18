@@ -48,7 +48,9 @@ stages:
               platform: 'any CPU'
               configuration: 'release'
               restoreNugetPackages: true
-          
+          - task: SonarCloudPublish@1
+            inputs:
+              pollingTimeoutSec: '300'
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(System.DefaultWorkingDirectory)'
@@ -75,9 +77,6 @@ stages:
               testRunTitle: 'Test-run01'
               platform: '$(buildPlatform)'
               configuration: '$(buildConfiguration)'
-          - task: SonarCloudPublish@1
-            inputs:
-              pollingTimeoutSec: '300'
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'JUnit'
