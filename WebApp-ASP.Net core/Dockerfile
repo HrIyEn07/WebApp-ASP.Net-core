@@ -3,23 +3,22 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 # Copy the project file and restore dependencies
-COPY ["WebApp-ASP.Net core.csproj", "./"]
+COPY *.csproj .
 RUN dotnet restore
 
 # Copy the remaining source code
 COPY . .
 
-# Clean and build the application
-RUN dotnet clean
-RUN dotnet build -c Release --no-restore
-RUN dotnet publish -c Release -o out
+# Build the application
+RUN dotnet build -c Release -o /app/build
+
+# Publish the application
+RUN dotnet publish -c Release -o /app/publish
 
 # Use a lighter runtime image for the final image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
-
-# Copy the built application from the build image
-COPY --from=build /app/out .
+COPY --from=build /app/publish .
 
 # Expose the port the app will run on
 EXPOSE 80
