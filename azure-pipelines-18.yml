@@ -29,7 +29,15 @@ stages:
             inputs:
               command: 'restore'
               restoreSolution: '**/*.sln'
-          
+          - task: SonarCloudAnalyze@1
+            inputs:
+              jdkversion: 'JAVA_HOME_17_X64'
+          - task: SonarCloudPrepare@1
+            inputs:
+              SonarCloud: 'devops-sonarcloud01'
+              organization: 'devops-stg-org-key10'
+              scannerMode: 'CLI'
+              configMode: 'file'
           - task: VSBuild@1
             inputs:
               solution: '**\*.sln'
@@ -37,7 +45,7 @@ stages:
               platform: 'any CPU'
               configuration: 'release'
               restoreNugetPackages: true
-
+          
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(System.DefaultWorkingDirectory)'
@@ -64,6 +72,9 @@ stages:
               testRunTitle: 'Test-run01'
               platform: '$(buildPlatform)'
               configuration: '$(buildConfiguration)'
+          - task: SonarCloudPublish@1
+            inputs:
+              pollingTimeoutSec: '300'
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'JUnit'
