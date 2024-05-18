@@ -1,27 +1,23 @@
-# Use the official .NET SDK image for building
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+# Use lightweight mcr.microsoft.com/dotnet/aspnet:6.0 image as base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+
+# Copy the application source code from current directory
 WORKDIR /app
 
-# Copy the project file and restore dependencies
-COPY *.csproj .
-RUN dotnet restore
-
-# Copy the remaining source code
+# Copy everything from the current directory ( . ) to the working directory
 COPY . .
 
-# Build the application
-RUN dotnet build -c Release -o /app/build
+# Restore dependencies using dotnet restore
+RUN dotnet restore
 
-# Publish the application
-RUN dotnet publish -c Release -o /app/publish
+# Build the application using dotnet publish
+RUN dotnet publish -c Release -o out
 
-# Use a lighter runtime image for the final image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
-WORKDIR /app
-COPY --from=build /app/publish .
+# Set the working directory to the output folder where the published application resides
+WORKDIR /app/out
 
-# Expose the port the app will run on
+# Expose port 80 for the application to listen on
 EXPOSE 80
 
-# Command to run the application
-ENTRYPOINT ["dotnet", "WebApp-ASP.Net-core.dll"]
+# Run the application using the default web server
+ENTRYPOINT ["dotnet", "WebApp-ASP.Net-core.dll"]  # Replace with your application name
