@@ -9,6 +9,9 @@ RUN dotnet restore
 # Copy the remaining source code
 COPY . .
 
+# Ensure correct permissions
+RUN chmod -R 777 /app/obj
+
 # Build the application
 RUN dotnet publish -c Release -o out
 
