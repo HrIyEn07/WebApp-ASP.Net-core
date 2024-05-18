@@ -1,23 +1,26 @@
-# Use lightweight mcr.microsoft.com/dotnet/aspnet:6.0 image as base
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+# Stage 1: Restore dependencies (uses image with .NET SDK)
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-stage
 
-# Copy the application source code from current directory
+# Set working directory
 WORKDIR /app
 
-# Copy everything from the current directory ( . ) to the working directory
+# Copy the project ( . ) to avoid unnecessary files
 COPY . .
 
 # Restore dependencies using dotnet restore
 RUN dotnet restore
 
-# Build the application using dotnet publish
-RUN dotnet publish -c Release -o out
+# Stage 2: Build and copy the application (smaller image)
+FROM microsoft/dotnet:6.0-aspnet AS final-stage
 
-# Set the working directory to the output folder where the published application resides
-WORKDIR /app/out
+# Copy only the project files from the build stage
+COPY --from=build-stage /app .
 
-# Expose port 80 for the application to listen on
+# Set user to non-root user for security
+USER nobody
+
+# Expose port 80 for the application
 EXPOSE 80
 
-# Run the application using the default web server
-ENTRYPOINT ["dotnet", "WebApp-ASP.Net-core.dll"]  # Replace with your application name
+# Run the application using default web server (kestrel)
+ENTRYPOINT ["dotnet", "WebApp-ASP.Net-core.dll"]  # Replace with your actual application name
