@@ -1,11 +1,8 @@
 # Stage 1: Restore dependencies (uses image with .NET SDK)
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-stage
 
-# Set working directory with appropriate permissions
-WORKDIR /app
-
-# Grant read/write/execute permissions to the build user on the working directory
-RUN chmod -R 775 /app
+# Set working directory with appropriate permissions (using a Linux shell)
+RUN ["bash", "-c", "chmod -R 775 /app"]
 
 # Copy the project ( . ) to avoid unnecessary files
 COPY . .
