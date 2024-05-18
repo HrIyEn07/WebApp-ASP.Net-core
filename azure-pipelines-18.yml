@@ -43,7 +43,7 @@ stages:
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: '$(Build.BuildId) -tag'
+              ArtifactName: '$(Build.BuildId)'
               publishLocation: 'Container'
   - stage: Test
     dependsOn: Build
@@ -51,6 +51,8 @@ stages:
     jobs:
       - job: Test
         displayName: Test job
+        pool:
+          vmImage: 'windows-latest'
         steps:
           - task: VSTest@3
             inputs:
