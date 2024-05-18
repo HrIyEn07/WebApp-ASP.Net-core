@@ -9,7 +9,9 @@ RUN dotnet restore
 # Copy the remaining source code
 COPY . .
 
-# Build the application
+# Clean and build the application
+RUN dotnet clean
+RUN dotnet build -c Release --no-restore
 RUN dotnet publish -c Release -o out
 
 # Use a lighter runtime image for the final image
