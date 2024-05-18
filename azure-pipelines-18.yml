@@ -51,8 +51,6 @@ stages:
     jobs:
       - job: Test
         displayName: Test job
-        pool:
-          name: Windows-latest
         steps:
           - task: VSTest@3
             inputs:
