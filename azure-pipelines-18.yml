@@ -1,0 +1,74 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+stages:
+  - stage: Build
+    displayName: Build stage
+    jobs:
+      - job: Build
+        displayName: Build Job
+        steps:
+          - task: NuGetToolInstaller@1
+            inputs:
+              versionSpec: 
+              checkLatest: true
+          - task: NuGetCommand@2
+            inputs:
+              command: 'restore'
+              restoreSolution: '**/*.sln'
+          
+          - task: VSBuild@1
+            inputs:
+              solution: '**\*.sln'
+              msbuildArgs: '-p:Configuration=$(buildConfiguration)'
+              platform: 'any CPU'
+              configuration: 'release'
+              clean: true
+              restoreNugetPackages: true
+              msbuildArchitecture: 'x64'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: '$(Build.BuildId) -tag'
+              publishLocation: 'Container'
+  - stage: Test
+    dependsOn: Build
+    displayName: Test stage
+    jobs:
+      - job: Test
+        displayName: Test job
+        pool:
+          name: Windows-latest
+        steps:
+          - task: VSTest@3
+            inputs:
+              testSelector: 'testAssemblies'
+              testAssemblyVer2: |
+                **\*test*.dll
+                !**\*TestAdapter.dll
+                !**\obj\**
+              searchFolder: '$(System.DefaultWorkingDirectory)'
+              codeCoverageEnabled: true
+              testRunTitle: 'Test-run01'
+              platform: '$(buildPlatform)'
+              configuration: '$(buildConfiguration)'
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/TEST-*.xml'
+              mergeTestResults: true
+              testRunTitle: 'ASP.NET Unit Tests'
