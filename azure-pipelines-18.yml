@@ -36,9 +36,7 @@ stages:
               msbuildArgs: '-p:Configuration=$(buildConfiguration)'
               platform: 'any CPU'
               configuration: 'release'
-              clean: true
               restoreNugetPackages: true
-              msbuildArchitecture: 'x64'
 
           - task: PublishBuildArtifacts@1
             inputs:
