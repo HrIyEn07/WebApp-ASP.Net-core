@@ -40,7 +40,7 @@ stages:
 
           - task: PublishBuildArtifacts@1
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              PathtoPublish: '$(System.DefaultWorkingDirectory)'
               ArtifactName: '$(Build.BuildId)'
               publishLocation: 'Container'
   - stage: Test
