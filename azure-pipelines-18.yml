@@ -31,10 +31,13 @@ stages:
               restoreSolution: '**/*.sln'
           - task: SonarCloudPrepare@1
             inputs:
-              SonarCloud: 'devops-sonarcloud01'
+              SonarCloud: 'SonarCloud-SP'
               organization: 'devops-stg-org-key10'
               scannerMode: 'CLI'
-              configMode: 'file'
+              configMode: 'manual'
+              cliProjectKey: 'DevOps-stg-org_Agile_Project01'
+              cliProjectName: 'Agile_Project01'
+              cliSources: '.'
           - task: SonarCloudAnalyze@1
             inputs:
               jdkversion: 'JAVA_HOME_17_X64'
