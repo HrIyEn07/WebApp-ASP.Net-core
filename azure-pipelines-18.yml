@@ -83,3 +83,9 @@ stages:
               testResultsFiles: '**/TEST-*.xml'
               mergeTestResults: true
               testRunTitle: 'ASP.NET Unit Tests'
+          
+          - task: trivy@1
+            inputs:
+              version: 'latest'
+              path: '$(System.DefaultWorkingDirectory)'
+              severities: 'CRITICAL'
