@@ -1,26 +1,23 @@
-# Stage 1: Restore dependencies (uses image with .NET SDK)
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-stage
-
-# Set working directory
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-nanoserver-1809 AS base
 WORKDIR /app
+EXPOSE 5070
 
-# Copy the project ( . ) to avoid unnecessary files
+ENV ASPNETCORE_URLS=http://+:5070
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0-nanoserver-1809 AS build
+ARG configuration=Release
+WORKDIR /src
+COPY ["WebApp-ASP.Net-core/WebApp-ASP.Net core/WebApp-ASP.Net core.csproj", "WebApp-ASP.Net-core/WebApp-ASP.Net core/"]
+RUN dotnet restore "WebApp-ASP.Net-core\WebApp-ASP.Net core\WebApp-ASP.Net core.csproj"
 COPY . .
+WORKDIR "/src/WebApp-ASP.Net-core/WebApp-ASP.Net core"
+RUN dotnet build "WebApp-ASP.Net core.csproj" -c $configuration -o /app/build
 
-# Restore dependencies using dotnet restore
-RUN dotnet restore
+FROM build AS publish
+ARG configuration=Release
+RUN dotnet publish "WebApp-ASP.Net core.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
 
-# Stage 2: Build and copy the application (smaller image)
-FROM microsoft/dotnet:6.0-aspnet AS final-stage
-
-# Copy only the project files from the build stage
-COPY --from=build-stage /app .
-
-# Set user to non-root user for security (e.g., nobody)
-USER nobody
-
-# Expose port 80 for the application
-EXPOSE 80
-
-# Run the application using default web server (kestrel)
-ENTRYPOINT ["dotnet", "WebApp-ASP.Net-core.dll"]  # Updated with your application DLL name
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "WebApp-ASP.Net core.dll"]
