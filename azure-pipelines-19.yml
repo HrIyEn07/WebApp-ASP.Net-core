@@ -16,8 +16,7 @@ stages:
         steps:
         - task: NuGetToolInstaller@1
           inputs:
-            versionSpec: 'latest'  # Optionally specify a version if needed
-            checkLatest: true
+            versionSpec: 'latest'
 
   - stage: Restore
     dependsOn: InstallNuGet
