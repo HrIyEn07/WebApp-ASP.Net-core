@@ -28,14 +28,15 @@ stages:
         command: 'restore'
         restoreSolution: '$(solution)'
         feedsToUse: 'select' # Adjust if you need to use specific feeds or the default feed
-      continueOnError: false  # Fail the pipeline if restore fails
 
 - stage: Build
   dependsOn: Restore
   jobs:
   - job: Build
     steps:
-    - script: dotnet clean $(solution) --configuration $(buildConfiguration)
+    - script: |
+        echo Cleaning solution...
+        dotnet clean $(solution) --configuration $(buildConfiguration)
       displayName: 'Clean solution'
 
     - task: VSBuild@1
