@@ -5,7 +5,7 @@ trigger:
       - staging
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'Windows-latest'
 
 variables:
   solution: '**/*.sln'
