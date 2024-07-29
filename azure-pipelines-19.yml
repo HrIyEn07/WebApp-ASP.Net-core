@@ -1,5 +1,6 @@
 trigger:
 - main
+- staging
 
 pool:
   vmImage: 'windows-latest'
@@ -10,38 +11,21 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-- stage: InstallNuGet
-  jobs:
-  - job: InstallNuGet
-    displayName: Install NuGet
-    steps:
-    - task: NuGetToolInstaller@1
-      inputs:
-        versionSpec: '6.10.1'
-
 - stage: Restore
-  dependsOn: InstallNuGet
   jobs:
   - job: Restore
-    displayName: Restore NuGet Packages
     steps:
+    - task: NuGetToolInstaller@1
     - task: NuGetCommand@2
+
       inputs:
-        command: 'restore'
         restoreSolution: '$(solution)'
-        feedsToUse: 'select' # Adjust if you need to use specific feeds or the default feed
 
 - stage: Build
   dependsOn: Restore
   jobs:
   - job: Build
-    displayName: Build Solution
     steps:
-    - script: |
-        echo Cleaning solution...
-        dotnet clean $(solution) --configuration $(buildConfiguration)
-      displayName: 'Clean solution'
-
     - task: VSBuild@1
       inputs:
         solution: '$(solution)'
@@ -49,55 +33,29 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    - task: PublishPipelineArtifact@1
-      displayName: Publish Build Artifacts
-      inputs:
-        targetPath: '$(build.artifactStagingDirectory)'
-        artifact: 'build-artifacts'
-        publishLocation: 'pipeline'
-
 - stage: Test
   dependsOn: Build
   jobs:
   - job: Test
-    displayName: Run Tests
     steps:
-    - task: DownloadPipelineArtifact@2
-      displayName: Download Build Artifacts
-      inputs:
-        artifact: 'build-artifacts'
-        targetPath: '$(Pipeline.Workspace)'
-
     - task: VSTest@2
-      displayName: Execute Tests
       inputs:
-        testSelector: 'testAssemblies'
-        testAssemblyVer2: |
-          **\*test*.dll
-          !**\*TestAdapter.dll
-          !**\obj\**
-        searchFolder: '$(Pipeline.Workspace)'
-        runTestsInIsolation: false
-        codeCoverageEnabled: true
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-- stage: Publish_Build_Artifacts
+- stage: Publish
   dependsOn: Test
   jobs:
-  - job: Publish_Build_Artifacts
-    displayName: Publish Final Artifacts
+  - job: Publish
     steps:
     - task: CopyFiles@2
-      displayName: Copy Files
       inputs:
-        SourceFolder: '$(Pipeline.Workspace)'
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishBuildArtifacts@1
-      displayName: Publish Artifacts
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'final-artifacts'
-        publishLocation: 'pipeline'
+        ArtifactName: 'ASP.net code-artifact'
+        publishLocation: 'Container'
