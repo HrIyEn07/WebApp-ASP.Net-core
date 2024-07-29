@@ -8,6 +8,8 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  buildVersion: '$(Build.BuildId)'
+  artifactName: 'build-output-$(buildVersion)'
 
 stages:
   - stage: InstallNuGet
@@ -16,7 +18,8 @@ stages:
         steps:
         - task: NuGetToolInstaller@1
           inputs:
-            versionSpec: '6.10.1'
+            versionSpec: 'latest'
+            checkLatest: true
 
   - stage: Restore
     dependsOn: InstallNuGet
@@ -27,26 +30,40 @@ stages:
           inputs:
             command: 'restore'
             restoreSolution: '$(solution)'
-            feedsToUse: 'select'  # Adjust if you need to use specific feeds or the default feed
+            feedsToUse: 'select'
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(System.DefaultWorkingDirectory)'
+            ArtifactName: 'restore-artifacts'
+            publishLocation: 'Container'
 
   - stage: Build
     dependsOn: Restore
     jobs:
       - job: Build
         steps:
+        - task: DownloadBuildArtifacts@0
+          inputs:
+            artifactName: 'restore-artifacts'
+            downloadPath: '$(System.DefaultWorkingDirectory)'
         - task: VSBuild@1
           inputs:
             solution: '$(solution)'
             msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
             platform: '$(buildPlatform)'
             configuration: '$(buildConfiguration)'
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: '$(artifactName)'
+            publishLocation: 'Container'
 
   - stage: Test
     dependsOn: Build
     jobs:
       - job: Test
         steps:
-        - task: VSTest@2  # Use VSTest@2 instead of VSTest@3 if that is your version; adjust if necessary
+        - task: VSTest@2
           inputs:
             testSelector: 'testAssemblies'
             testAssemblyVer2: |
