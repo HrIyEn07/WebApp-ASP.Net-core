@@ -5,14 +5,14 @@ trigger:
       - staging
 
 pool:
-  vmImage: 'Windows-latest'
+  vmImage: 'windows-latest'  # Ensure this is correct for your needs
 
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   dockerRegistryServiceConnection: 'acr-sp'
-  imageRepository: 'ASP.net core'
+  imageRepository: 'aspnet-core'  # Avoid spaces in names
   containerRegistry: 'azurecontainerregistry01.azurecr.io'
   tag: '$(Build.BuildId)'
 
@@ -44,7 +44,7 @@ stages:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(build.artifactStagingDirectory)'
-        ArtifactName: 'asp.net core'
+        ArtifactName: 'aspnet-core'
         publishLocation: 'Container'
 
 - stage: Test
@@ -65,6 +65,8 @@ stages:
 
 - stage: Dockerize
   dependsOn: Test
+  pool:
+    vmImage: 'ubuntu-latest'  # Use Linux agent for Docker and Trivy
   jobs:
   - job: DockerBuild
     displayName: 'Build Docker image'
@@ -80,9 +82,9 @@ stages:
 
     # Trivy Scan
     - script: |
-        sudo apt-get update && sudo apt-get install wget -y
+        apt-get update && apt-get install wget -y
         wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.45.1_Linux-64bit.deb
-        sudo dpkg -i trivy_0.45.1_Linux-64bit.deb
+        dpkg -i trivy_0.45.1_Linux-64bit.deb
 
         # Scan the Docker image for vulnerabilities
         trivy image --exit-code 1 --severity HIGH,CRITICAL $(containerRegistry)/$(imageRepository):$(tag)
