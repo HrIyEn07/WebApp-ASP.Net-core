@@ -9,21 +9,21 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0-nanoserver-1809 AS build
 ARG configuration=Release
 WORKDIR /src
 
-# Copy the .csproj file into the build container
-COPY WebApp-ASP.Net core.csproj ./
-RUN dotnet restore "WebApp-ASP.Net core.csproj"
+# Copy the .csproj file(s) using a wildcard
+COPY "WebApp-ASP.Net core/*.csproj" ./ 
+RUN dotnet restore "./WebApp-ASP.Net core.csproj"
 
-# Copy the rest of the application code
+# Copy all the source code to the build context
 COPY . .
 
 # Build the application
 WORKDIR /src
-RUN dotnet build "WebApp-ASP.Net core.csproj" -c $configuration -o /app/build
+RUN dotnet build "./WebApp-ASP.Net core.csproj" -c $configuration -o /app/build
 
 # Publish the application
 FROM build AS publish
 ARG configuration=Release
-RUN dotnet publish "WebApp-ASP.Net core.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./WebApp-ASP.Net core.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
 
 # Create the final image
 FROM base AS final
