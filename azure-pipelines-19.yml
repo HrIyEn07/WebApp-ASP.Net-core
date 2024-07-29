@@ -13,6 +13,7 @@ stages:
 - stage: InstallNuGet
   jobs:
   - job: InstallNuGet
+    displayName: Install NuGet
     steps:
     - task: NuGetToolInstaller@1
       inputs:
@@ -22,6 +23,7 @@ stages:
   dependsOn: InstallNuGet
   jobs:
   - job: Restore
+    displayName: Restore NuGet Packages
     steps:
     - task: NuGetCommand@2
       inputs:
@@ -33,6 +35,7 @@ stages:
   dependsOn: Restore
   jobs:
   - job: Build
+    displayName: Build Solution
     steps:
     - script: |
         echo Cleaning solution...
@@ -46,23 +49,27 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Build Artifacts
       inputs:
-        PathtoPublish: '$(build.artifactStagingDirectory)'
-        ArtifactName: 'build-artifacts'
-        publishLocation: 'Pipeline'
+        targetPath: '$(build.artifactStagingDirectory)'
+        artifact: 'build-artifacts'
+        publishLocation: 'pipeline'
 
 - stage: Test
   dependsOn: Build
   jobs:
   - job: Test
+    displayName: Run Tests
     steps:
     - task: DownloadPipelineArtifact@2
+      displayName: Download Build Artifacts
       inputs:
         artifact: 'build-artifacts'
-        path: '$(Pipeline.Workspace)'
+        targetPath: '$(Pipeline.Workspace)'
 
     - task: VSTest@2
+      displayName: Execute Tests
       inputs:
         testSelector: 'testAssemblies'
         testAssemblyVer2: |
@@ -79,15 +86,18 @@ stages:
   dependsOn: Test
   jobs:
   - job: Publish_Build_Artifacts
+    displayName: Publish Final Artifacts
     steps:
     - task: CopyFiles@2
+      displayName: Copy Files
       inputs:
         SourceFolder: '$(Pipeline.Workspace)'
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishBuildArtifacts@1
+      displayName: Publish Artifacts
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'final-artifacts'
-        publishLocation: 'Container'
+        publishLocation: 'pipeline'
