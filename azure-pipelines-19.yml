@@ -11,9 +11,9 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-- stage: Restore
+- stage: Build
   jobs:
-  - job: Restore
+  - job: Build
     steps:
     - task: NuGetToolInstaller@1
     - task: NuGetCommand@2
@@ -21,11 +21,6 @@ stages:
       inputs:
         restoreSolution: '$(solution)'
 
-- stage: Build
-  dependsOn: Restore
-  jobs:
-  - job: Build
-    steps:
     - task: VSBuild@1
       inputs:
         solution: '$(solution)'
