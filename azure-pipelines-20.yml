@@ -1,0 +1,103 @@
+trigger:
+  branches:
+    include:
+      - main
+      - staging
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  dockerRegistryServiceConnection: 'acr-sp'
+  imageRepository: 'ASP.net core'
+  containerRegistry: 'azurecontainerregistry01.azurecr.io'
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    displayName: 'Build the application'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '6.x'
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
+
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(build.artifactStagingDirectory)'
+        ArtifactName: 'asp.net core'
+        publishLocation: 'Container'
+
+- stage: Test
+  dependsOn: Build
+  jobs:
+  - job: Test
+    displayName: 'Run tests'
+    steps:
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          **\*Tests.dll
+          !**\*TestAdapter.dll
+          !**\obj\**
+
+- stage: Dockerize
+  dependsOn: Test
+  jobs:
+  - job: DockerBuild
+    displayName: 'Build Docker image'
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRegistryServiceConnection)'
+        repository: '$(imageRepository)'
+        command: 'build'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(tag)
+
+    # Trivy Scan
+    - script: |
+        sudo apt-get update && sudo apt-get install wget -y
+        wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.45.1_Linux-64bit.deb
+        sudo dpkg -i trivy_0.45.1_Linux-64bit.deb
+
+        # Scan the Docker image for vulnerabilities
+        trivy image --exit-code 1 --severity HIGH,CRITICAL $(containerRegistry)/$(imageRepository):$(tag)
+      displayName: 'Trivy Scan'
+
+- stage: Push
+  dependsOn: Dockerize
+  jobs:
+  - job: DockerPush
+    displayName: 'Push Docker image to ACR'
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRegistryServiceConnection)'
+        repository: '$(imageRepository)'
+        command: 'push'
+        tags: |
+          $(tag)
