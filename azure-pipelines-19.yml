@@ -8,86 +8,81 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  buildVersion: '$(Build.BuildId)'
-  artifactName: 'build-output-$(buildVersion)'
 
 stages:
-  - stage: InstallNuGet
-    jobs:
-      - job: InstallNuGet
-        steps:
-        - task: NuGetToolInstaller@1
-          inputs:
-            versionSpec: '6.10.1'
-            checkLatest: true
+- stage: InstallNuGet
+  jobs:
+  - job: InstallNuGet
+    steps:
+    - task: NuGetToolInstaller@1
+      inputs:
+        versionSpec: '6.10.1'
 
-  - stage: Restore
-    dependsOn: InstallNuGet
-    jobs:
-      - job: Restore
-        steps:
-        - task: NuGetCommand@2
-          inputs:
-            command: 'restore'
-            restoreSolution: '$(solution)'
-            feedsToUse: 'select'
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: '$(System.DefaultWorkingDirectory)'
-            ArtifactName: 'restore-artifacts'
-            publishLocation: 'Container'
+- stage: Restore
+  dependsOn: InstallNuGet
+  jobs:
+  - job: Restore
+    steps:
+    - task: NuGetCommand@2
+      inputs:
+        command: 'restore'
+        restoreSolution: '$(solution)'
+        feedsToUse: 'select' # Adjust if you need to use specific feeds or the default feed
 
-  - stage: Build
-    dependsOn: Restore
-    jobs:
-      - job: Build
-        steps:
-        - task: DownloadBuildArtifacts@0
-          inputs:
-            artifactName: 'restore-artifacts'
-            downloadPath: '$(System.DefaultWorkingDirectory)'
-        - task: VSBuild@1
-          inputs:
-            solution: '$(solution)'
-            msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-            platform: '$(buildPlatform)'
-            configuration: '$(buildConfiguration)'
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-            ArtifactName: '$(artifactName)'
-            publishLocation: 'Container'
+- stage: Build
+  dependsOn: Restore
+  jobs:
+  - job: Build
+    steps:
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-  - stage: Test
-    dependsOn: Build
-    jobs:
-      - job: Test
-        steps:
-        - task: VSTest@2
-          inputs:
-            testSelector: 'testAssemblies'
-            testAssemblyVer2: |
-              **\*test*.dll
-              !**\*TestAdapter.dll
-              !**\obj\**
-            searchFolder: '$(System.DefaultWorkingDirectory)'
-            runTestsInIsolation: false
-            codeCoverageEnabled: true
-            platform: '$(buildPlatform)'
-            configuration: '$(buildConfiguration)'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(build.artifactStagingDirectory)'
+        ArtifactName: 'build-artifacts'
+        publishLocation: 'Pipeline'
 
-  - stage: Publish_Build_Artifacts
-    dependsOn: Test
-    jobs:
-      - job: Publish_Build_Artifacts
-        steps:
-        - task: CopyFiles@2
-          inputs:
-            SourceFolder: '$(System.DefaultWorkingDirectory)'
-            Contents: '**'
-            TargetFolder: '$(Build.ArtifactStagingDirectory)'
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-            ArtifactName: 'ASP.net code-Artifacts'
-            publishLocation: 'Container'
+- stage: Test
+  dependsOn: Build
+  jobs:
+  - job: Test
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: 'build-artifacts'
+        path: '$(Pipeline.Workspace)'
+
+    - task: VSTest@2
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          **\*test*.dll
+          !**\*TestAdapter.dll
+          !**\obj\**
+        searchFolder: '$(Pipeline.Workspace)'
+        runTestsInIsolation: false
+        codeCoverageEnabled: true
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+- stage: Publish_Build_Artifacts
+  dependsOn: Test
+  jobs:
+  - job: Publish_Build_Artifacts
+    steps:
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(Pipeline.Workspace)'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'final-artifacts'
+        publishLocation: 'Container'
