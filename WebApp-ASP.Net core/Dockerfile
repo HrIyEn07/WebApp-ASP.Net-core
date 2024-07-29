@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0-nanoserver-1809 AS build
 ARG configuration=Release
 WORKDIR /src
 COPY ["WebApp-ASP.Net-core/WebApp-ASP.Net core/WebApp-ASP.Net core.csproj", "WebApp-ASP.Net-core/WebApp-ASP.Net core/"]
-RUN dotnet restore "WebApp-ASP.Net-core\WebApp-ASP.Net core\WebApp-ASP.Net core.csproj"
+RUN dotnet restore "WebApp-ASP.Net-core/WebApp-ASP.Net core/WebApp-ASP.Net core.csproj"
 COPY . .
 WORKDIR "/src/WebApp-ASP.Net-core/WebApp-ASP.Net core"
 RUN dotnet build "WebApp-ASP.Net core.csproj" -c $configuration -o /app/build
