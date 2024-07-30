@@ -14,6 +14,7 @@ stages:
 - stage: Build
   jobs:
   - job: Build
+    displayName: Build job
     steps:
     - task: NuGetToolInstaller@1
     - task: NuGetCommand@2
@@ -39,10 +40,12 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-- stage: Publish
+- stage: Publish_Artifacts
   dependsOn: Test
+
   jobs:
   - job: Publish
+    continueOnError: true
     steps:
     - task: CopyFiles@2
       inputs:
