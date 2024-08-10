@@ -129,6 +129,6 @@ stages:
           
           - task: PublishBuildArtifacts@1
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
               ArtifactName: 'Terraform-artifact'
               publishLocation: 'Container'
