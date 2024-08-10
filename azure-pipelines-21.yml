@@ -33,10 +33,14 @@ stages:
 
   - stage: Terraform_Validate
     displayName: Terraform validate
+    dependsOn: Terraform_Init
     jobs:
       - job: Terraform_validate
         displayName: Terraform validate
         steps:
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
