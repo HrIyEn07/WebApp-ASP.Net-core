@@ -41,6 +41,17 @@ stages:
           - task: TerraformInstaller@1
             inputs:
               terraformVersion: 'latest'
+          
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+              backendServiceArm: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
+              backendAzureRmResourceGroupName: 'terraform-rg10'
+              backendAzureRmStorageAccountName: 'terraformbackend0001'
+              backendAzureRmContainerName: 'tfcontainer01'
+              backendAzureRmKey: 'dev.tfstate'
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
@@ -53,6 +64,20 @@ stages:
       - job: Terraform_Format
         displayName: Terraform Format
         steps:
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
+          
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+              backendServiceArm: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
+              backendAzureRmResourceGroupName: 'terraform-rg10'
+              backendAzureRmStorageAccountName: 'terraformbackend0001'
+              backendAzureRmContainerName: 'tfcontainer01'
+              backendAzureRmKey: 'dev.tfstate'
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
@@ -67,6 +92,20 @@ stages:
       - job: Terraform_Plan
         displayName: Terraform Plan
         steps:
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
+          
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+              backendServiceArm: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
+              backendAzureRmResourceGroupName: 'terraform-rg10'
+              backendAzureRmStorageAccountName: 'terraformbackend0001'
+              backendAzureRmContainerName: 'tfcontainer01'
+              backendAzureRmKey: 'dev.tfstate'
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
