@@ -24,19 +24,12 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-manifests'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
               backendServiceArm: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
               backendAzureRmResourceGroupName: 'terraform-rg10'
               backendAzureRmStorageAccountName: 'terraformbackend0001'
               backendAzureRmContainerName: 'tfcontainer01'
               backendAzureRmKey: 'dev.tfstate'
-
-  - stage: Terraform_Plan
-    displayName: Terraform Plan
-    jobs:
-      - job: Terraform_Plan
-        displayName: Terraform Plan
-        steps:
 
   - stage: Terraform_Validate
     displayName: Terraform validate
@@ -44,6 +37,11 @@ stages:
       - job: Terraform_validate
         displayName: Terraform validate
         steps:
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
 
   - stage: Terraform_Format
     displayName: Terraform Format
@@ -51,10 +49,24 @@ stages:
       - job: Terraform_Format
         displayName: Terraform Format
         steps:
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'custom'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+              outputTo: 'console'
+              customCommand: 'fmt'
+              environmentServiceNameAzureRM: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
   - stage: Terraform_Plan
     displayName: Terraform Plan
     jobs:
       - job: Terraform_Plan
         displayName: Terraform Plan
         steps:
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+              environmentServiceNameAzureRM: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
         
