@@ -121,6 +121,12 @@ stages:
       - job: Publish_Artifacts
         displayName: Publish_Artifacts
         steps:
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+              Contents: '**'
+              TargetFolder: '$(build.artifactstagingdirectory)'
+          
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)/WebApp-ASP.Net core/terraform-manifests'
