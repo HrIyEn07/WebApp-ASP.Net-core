@@ -60,6 +60,7 @@ stages:
 
   - stage: Terraform_Format
     displayName: Terraform Format
+    dependsOn: Terraform_Init
     jobs:
       - job: Terraform_Format
         displayName: Terraform Format
@@ -88,6 +89,7 @@ stages:
               environmentServiceNameAzureRM: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
   - stage: Terraform_Plan
     displayName: Terraform Plan
+    dependsOn: Terraform_Init
     jobs:
       - job: Terraform_Plan
         displayName: Terraform Plan
@@ -112,4 +114,15 @@ stages:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/WebApp-ASP.Net core/terraform-manifests'
               environmentServiceNameAzureRM: 'Azure DevOps Pulse (18a0e420-4ca6-47f3-ba52-2534b3c7d2c1)'
-        
+  - stage: Publish_Artifacts
+    displayName: Publish_Artifacts
+    dependsOn: Terraform_Init
+    jobs:
+      - job: Publish_Artifacts
+        displayName: Publish_Artifacts
+        steps:
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/WebApp-ASP.Net core/terraform-manifests'
+              ArtifactName: 'Terraform-artifact'
+              publishLocation: 'Container'
