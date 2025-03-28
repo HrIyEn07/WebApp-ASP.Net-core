@@ -8,6 +8,8 @@ trigger:
 
 pool:
   name: 'Default'
+  demands:
+    - Agent.Name -equals self-hosted-agent01
 
 variables:
   solution: '**/*.sln'
